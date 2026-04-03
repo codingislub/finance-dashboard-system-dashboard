@@ -1,42 +1,44 @@
 # Finance Data Processing and Access Control Backend
 
-A backend assignment implementation for a finance dashboard system with role-based access control, financial record management, dashboard summaries, validation, and SQLite persistence.
+This project is a backend implmentation for a finance dashboard system. It focuses on managing financial data securly, with role-based access control, validation, and a simple SQLite database for persistance.
 
 ## Tech Stack
 
-- Node.js + TypeScript
-- Express.js
-- Prisma ORM
-- SQLite
-- Zod (input validation)
-- JWT + bcrypt (authentication)
+- Node.js + TypeScript  
+- Express.js  
+- Prisma ORM  
+- SQLite  
+- Zod (for input validation)  
+- JWT + bcrypt (for authentication)  
 
 ## Features
 
-- User and role management with statuses (`ACTIVE`, `INACTIVE`)
-- Role-based access control (`VIEWER`, `ANALYST`, `ADMIN`)
-- Financial records CRUD with filtering and pagination
-- Dashboard summary APIs (income, expense, net, category totals, recent activity, trends)
-- Validation and structured error handling
-- SQLite persistence and seed data
-- Search, soft delete, and basic rate limiting
+- User managment with active/inactive status handling  
+- Role-based access control (`VIEWER`, `ANALYST`, `ADMIN`)  
+- Full CRUD support for financial records with filtering and pagination  
+- Dashboard APIs for summaries like income, expenses, net balance, category totals, recent activity, and trends  
+- Proper validation and structured error handling  
+- SQLite database with seed data for quick setup  
+- Search functionality, soft delete support, and basic rate limiting  
 
 ## Role Behavior
 
-- `VIEWER`
-  - Can read only their own records
-  - Can read dashboard summaries/trends for their own records
-  - Cannot create/update/delete records
-  - Cannot manage users
-- `ANALYST`
-  - Can read only their own records
-  - Can read dashboard summaries/trends for their own records
-  - Cannot create/update/delete records
-  - Cannot manage users
-- `ADMIN`
-  - Full access to user management
-  - Record create/read/update/delete remains owner-scoped
-  - Dashboard access is based on the admin's own records
+- `VIEWER`  
+  - Can only view thier own records  
+  - Can access dashboard summaries and trends based on thier data  
+  - Cannot create, update, or delete records  
+  - Cannot manage users  
+
+- `ANALYST`  
+  - Similar to viewer, but more for analysis purpose  
+  - Read-only access to records and dashboard insights  
+  - Cannot modify any records  
+  - No access to user managment  
+
+- `ADMIN`  
+  - Has full access to user managment  
+  - Can create, update, and delete financial records (still limited to thier own records)  
+  - Dashboard access is based on thier own data  
 
 ## API Overview
 
@@ -44,46 +46,49 @@ Base URL: `http://localhost:4000`
 
 ### Health
 
-- `GET /health`
+- `GET /health`  
+  Used to check if the server is running or not  
 
 ### Auth
 
-- `POST /auth/register`
-- `POST /auth/login`
+- `POST /auth/register`  
+- `POST /auth/login`  
 
 ### Users (Admin only)
 
-- `POST /users`
-- `GET /users`
-- `PATCH /users/:id`
+- `POST /users`  
+- `GET /users`  
+- `PATCH /users/:id`  
 
 ### Records
 
-- `GET /records` (all authenticated roles)
-- Returns only records owned by the authenticated user
-- `POST /records` (admin only)
-- `PATCH /records/:id` (admin only)
-- `DELETE /records/:id` (admin only)
+- `GET /records` (available to all authenticated users)  
+  - Returns only the records owned by the logged-in user  
+
+- `POST /records` (admin only)  
+- `PATCH /records/:id` (admin only)  
+- `DELETE /records/:id` (admin only)  
 
 Filters for `GET /records`:
 
-- `type=INCOME|EXPENSE`
-- `category=...`
-- `search=...`
-- `startDate=<ISO datetime>`
-- `endDate=<ISO datetime>`
-- `page=<number>`
-- `pageSize=<number>`
+- `type=INCOME|EXPENSE`  
+- `category=...`  
+- `search=...`  
+- `startDate=<ISO datetime>`  
+- `endDate=<ISO datetime>`  
+- `page=<number>`  
+- `pageSize=<number>`  
 
 ### Dashboard
 
-- `GET /dashboard/summary`
-- `GET /dashboard/trends?period=weekly|monthly&months=6`
-- Dashboard data is computed only from the authenticated user's records
+- `GET /dashboard/summary`  
+- `GET /dashboard/trends?period=weekly|monthly&months=6`  
+
+All dashboard data is caluclated using only the authenticated user's records.
 
 ## Setup
 
-1. Install dependencies:
+1. Install dependancies:
 
 ```bash
 npm install
@@ -121,21 +126,21 @@ npm run dev
 
 ## Assumptions and Design Choices
 
-- First registered user is bootstrapped as `ADMIN`; all subsequent public registrations default to `VIEWER`.
-- Inactive users cannot authenticate or access protected APIs.
+- First registered user is automaticaly assigned the ADMIN role; others default to VIEWER.
+- Inactive users cannot login or access protected endpoints.
 - `ANALYST` role has read-only access to records and analytics.
 - `VIEWER` role can view records and dashboard only.
-- Financial records and dashboard analytics are isolated per authenticated user.
-- Record deletion is implemented as soft delete by setting `deletedAt`.
-- Aggregations are computed in service logic from persisted records for clarity.
-- SQLite is used to keep local setup simple for assessment.
-- Auth routes and protected API groups use simple in-memory rate limiting.
+- All data and analytics are scoped to the logged-in user.
+- Records are not permanantly deleted — soft delete is used via deletedAt.
+- Aggregations are computed in the service layer for clarity.
+- SQLite is used to keep setup simple and lightweight.
+- Basic in-memory rate limiting is applied to auth and protected routes.
 
 ## Error Handling and Validation
 
-- Zod validates request payloads and query parameters.
-- Centralized error middleware maps known failures to useful status codes.
-- Unknown routes return a standard 404 response
+- Zod validates request bodies and query params.
+- Centralized error handler ensures consistant API responses.
+- Unknown routes return a standard 404 response.
 
 ## Optional Enhancements Included
 
