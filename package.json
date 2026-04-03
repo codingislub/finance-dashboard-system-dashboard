@@ -8,10 +8,10 @@
   "main": "dist/src/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "cross-env DATABASE_URL=file:./dev.db prisma generate && tsc",
+    "build": "prisma generate && tsc",
     "start": "node dist/src/server.js",
     "test": "tsx --test test/all.test.ts",
-    "prisma:generate": "cross-env DATABASE_URL=file:./dev.db prisma generate",
+    "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev --name init",
     "seed": "tsx prisma/seed.ts",
     "lint": "tsc --noEmit"
@@ -26,16 +26,16 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@prisma/adapter-better-sqlite3": "^7.6.0",
+    "@prisma/adapter-pg": "^7.6.0",
     "@prisma/client": "^7.6.0",
     "bcryptjs": "^2.4.3",
-    "better-sqlite3": "^12.8.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
+    "pg": "^8.20.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

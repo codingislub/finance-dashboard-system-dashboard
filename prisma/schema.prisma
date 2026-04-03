@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 enum Role {
@@ -47,7 +47,7 @@ model FinancialRecord {
   updatedAt   DateTime   @updatedAt
   deletedAt   DateTime?
 
-  @@index([date])//for performance optimization
+  @@index([date]) // for performance optimization
   @@index([category])
   @@index([type])
   @@index([deletedAt])
