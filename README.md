@@ -19,21 +19,24 @@ A backend assignment implementation for a finance dashboard system with role-bas
 - Dashboard summary APIs (income, expense, net, category totals, recent activity, trends)
 - Validation and structured error handling
 - SQLite persistence and seed data
+- Search, soft delete, and basic rate limiting
 
 ## Role Behavior
 
 - `VIEWER`
-  - Can read records
-  - Can read dashboard summaries/trends
+  - Can read only their own records
+  - Can read dashboard summaries/trends for their own records
   - Cannot create/update/delete records
   - Cannot manage users
 - `ANALYST`
-  - Can read records
-  - Can read dashboard summaries/trends
+  - Can read only their own records
+  - Can read dashboard summaries/trends for their own records
   - Cannot create/update/delete records
   - Cannot manage users
 - `ADMIN`
-  - Full access: user management + record create/read/update/delete + dashboard access
+  - Full access to user management
+  - Record create/read/update/delete remains owner-scoped
+  - Dashboard access is based on the admin's own records
 
 ## API Overview
 
@@ -57,6 +60,7 @@ Base URL: `http://localhost:4000`
 ### Records
 
 - `GET /records` (all authenticated roles)
+- Returns only records owned by the authenticated user
 - `POST /records` (admin only)
 - `PATCH /records/:id` (admin only)
 - `DELETE /records/:id` (admin only)
@@ -65,6 +69,7 @@ Filters for `GET /records`:
 
 - `type=INCOME|EXPENSE`
 - `category=...`
+- `search=...`
 - `startDate=<ISO datetime>`
 - `endDate=<ISO datetime>`
 - `page=<number>`
@@ -74,6 +79,7 @@ Filters for `GET /records`:
 
 - `GET /dashboard/summary`
 - `GET /dashboard/trends?period=weekly|monthly&months=6`
+- Dashboard data is computed only from the authenticated user's records
 
 ## Setup
 
@@ -119,17 +125,24 @@ npm run dev
 - Inactive users cannot authenticate or access protected APIs.
 - `ANALYST` role has read-only access to records and analytics.
 - `VIEWER` role can view records and dashboard only.
+- Financial records and dashboard analytics are isolated per authenticated user.
+- Record deletion is implemented as soft delete by setting `deletedAt`.
 - Aggregations are computed in service logic from persisted records for clarity.
 - SQLite is used to keep local setup simple for assessment.
+- Auth routes and protected API groups use simple in-memory rate limiting.
 
 ## Error Handling and Validation
 
 - Zod validates request payloads and query parameters.
 - Centralized error middleware maps known failures to useful status codes.
-- Not found route handler returns a consistent `404` response.
+- Unknown routes return a standard 404 response
 
 ## Optional Enhancements Included
 
 - JWT authentication
 - Pagination on record listing
+- Search support for records
+- Soft delete for financial records
+- Basic rate limiting
+- Unit tests for validation and middleware
 - Seed script for quick evaluation
