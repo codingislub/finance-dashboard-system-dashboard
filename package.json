@@ -5,11 +5,11 @@
   "engines": {
     "node": "20.x"
   },
-  "main": "dist/server.js",
+  "main": "dist/src/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "cross-env DATABASE_URL=file:./dev.db prisma generate && tsc",
-    "start": "node dist/server.js",
+    "start": "node dist/src/server.js",
     "test": "tsx --test test/all.test.ts",
     "prisma:generate": "cross-env DATABASE_URL=file:./dev.db prisma generate",
     "prisma:migrate": "prisma migrate dev --name init",
