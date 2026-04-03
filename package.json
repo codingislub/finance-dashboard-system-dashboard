@@ -2,6 +2,9 @@
   "name": "finance-data-processing-backend",
   "version": "1.0.0",
   "description": "Finance dashboard backend with RBAC and summary analytics",
+  "engines": {
+    "node": "20.x"
+  },
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
